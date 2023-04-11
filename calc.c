@@ -7,17 +7,21 @@ typedef struct arrStack {
     char op[100];
     int top;
 }Stack;
+
 int trans(char *str, int i, int j) {
     int res = 0;
     for (int x = i; x < j; x++) {
-        if (res)
+        if (res) {
             res *= 10;
-        if (str[x] == '-')
+        }
+        if (str[x] == '-') {
             continue;
+        }
         res += str[x] - '0';
     }
-    if (str[i] == '-')
+    if (str[i] == '-') {
         return -res;
+    }
     return res;
 }
 int calc(char o, int a, int b) {
@@ -35,10 +39,12 @@ int calc(char o, int a, int b) {
 }
 void push(Stack *s, int n, char o) {
     s->top++;
-    if (n != INT_MIN)
+    if (n != INT_MIN) {
         s->num[s->top] = n;
-    if (o != '\0')
+    }
+    if (o != '\0') {
         s->op[s->top] = o;
+    }
 }
 int popn(Stack *s) {
     return s->num[s->top--];
@@ -54,34 +60,36 @@ int main() {
     os = (Stack *)malloc(sizeof(Stack));
     ns->top = -1;
     os->top = -1;
-    for (int i = 0; str[i] != '\0'; i++)
-        if (str[i] == '[' || str[i] == '{')
+    for (int i = 0; str[i] != '\0'; i++) {
+        if (str[i] == '[' || str[i] == '{') {
             str[i] = '(';
-        else if (str[i] == ']' || str[i] == '}')
+        } else if (str[i] == ']' || str[i] == '}') {
             str[i] = ')';
-    for (int i = 0; str[i] != '\0'; i++)
+        }
+    }
+    for (int i = 0; str[i] != '\0'; i++) {
         if (str[i] >= '0' && str[i] <= '9' || str[i] == '-' && (i == 0 || str[i - 1] == '(') && str[i + 1] >= '0' && str[i + 1] <= '9') {
             int j;
             for (j = i + 1; str[j] >= '0' && str[j] <= '9'; j++);
             push(ns, trans(str, i, j), '\0');
             i = j - 1;
-        }else if (str[i] == '+' || str[i] == '-') {
+        } else if (str[i] == '+' || str[i] == '-') {
             while (os->top != -1 && os->op[os->top] != '(') {
                 int b = popn(ns);
                 int a = popn(ns);
                 push(ns, calc(popo(os), a, b), '\0');
             }
             push(os, INT_MIN, str[i]);
-        }else if (str[i] == '*' || str[i] == '/') {
+        } else if (str[i] == '*' || str[i] == '/') {
             while (os->top != -1 && os->op[os->top] != '(' && os->op[os->top] != '+' && os->op[os->top] != '-') {
                 int b = popn(ns);
                 int a = popn(ns);
                 push(ns, calc(popo(os), a, b), '\0');
             }
             push(os, INT_MIN, str[i]);
-        }else if (str[i] == '(')
+        } else if (str[i] == '(') {
             push(os, INT_MIN, str[i]);
-        else {
+        } else {
             while (os->op[os->top] != '(') {
                 int b = popn(ns);
                 int a = popn(ns);
@@ -89,6 +97,7 @@ int main() {
             }
             popo(os);
         }
+    }
     while (os->top != -1) {
         int b = popn(ns);
         int a = popn(ns);
