@@ -1,6 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 int m, n, nump, min;
 int maze[10][10], res[100][2];
