@@ -90,7 +90,7 @@ int main() {
         } else if (str[i] == '(') {
             push(os, INT_MIN, str[i]);
         } else {
-            while (os->op[os->top] != '(') {
+            while (os->top != -1 && os->op[os->top] != '(') {
                 int b = popn(ns);
                 int a = popn(ns);
                 push(ns, calc(popo(os), a, b), '\0');
