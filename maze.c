@@ -1,54 +1,36 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-int m, n, min;
-int maze[10][10], res[100][2];
-char path[100];
+const int shift[4][3] = {{1,  0,  0},
+                         {0,  1,  1},
+                         {-1, 0,  2},
+                         {0,  -1, 3}};
+int m, n, min, maze[10][10], res[100][2], path[100], pathxy[100][2];
 
-void backtracking(int x, int y, int flag) {
+void backtracking(int x, int y, int pn) {
     if (x == m - 1 && y == n - 1) {
-        if (flag < min) {
-            min = flag;
-            for (int i = 1; i <= flag; i++) {
-                switch (path[i - 1]) {
-                    case 'W' :
-                        res[i][0] = res[i - 1][0] - 1;
-                        res[i][1] = res[i - 1][1];
-                        break;
-                    case 'S' :
-                        res[i][0] = res[i - 1][0] + 1;
-                        res[i][1] = res[i - 1][1];
-                        break;
-                    case 'A' :
-                        res[i][0] = res[i - 1][0];
-                        res[i][1] = res[i - 1][1] + 1;
-                        break;
-                    case 'D' :
-                        res[i][0] = res[i - 1][0];
-                        res[i][1] = res[i - 1][1] - 1;
-                        break;
-                }
+        if (pn < min) {
+            min = pn;
+            for (int i = 1; i <= pn; i++) {
+                res[i][0] = pathxy[i - 1][0];
+                res[i][1] = pathxy[i - 1][1];
             }
         }
         return;
     }
-    if (path[flag - 1] != 'S' && x != 0 && maze[x - 1][y] != 1) {
-        path[flag] = 'W';
-        backtracking(x - 1, y, flag + 1);
+    for (int i = 0; i < 4; i++) {
+        path[pn] = shift[i][2];
+        int nx = x + shift[i][0];
+        int ny = y + shift[i][1];
+        pathxy[pn][0] = nx;
+        pathxy[pn][1] = ny;
+        if (nx >= 0 && nx < m && ny >= 0 && ny < n && (pn && abs(path[pn] - path[pn - 1]) != 2 || !pn) &&
+            !maze[nx][ny]) {
+            backtracking(x + shift[i][0], y + shift[i][1], pn + 1);
+        }
     }
-    if ((flag == 0 || path[flag - 1] != 'W') && x != m - 1 && maze[x + 1][y] != 1) {
-        path[flag] = 'S';
-        backtracking(x + 1, y, flag + 1);
-    }
-    if (path[flag - 1] != 'D' && y != n - 1 && maze[x][y + 1] != 1) {
-        path[flag] = 'A';
-        backtracking(x, y + 1, flag + 1);
-    }
-    if ((flag == 0 || path[flag - 1] != 'A') && y != 0 && maze[x][y - 1] != 1) {
-        path[flag] = 'D';
-        backtracking(x, y - 1, flag + 1);
-    }
-    return;
 }
+
 int main() {
     scanf("%d %d", &m, &n);
     for (int i = 0; i < m; i++) {
