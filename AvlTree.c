@@ -102,5 +102,6 @@ int main() {
     mytree = insert(mytree, 3);
     mytree = insert(mytree, 4);
     printf("%d", find(mytree, 5));
+
     return 0;
 }
