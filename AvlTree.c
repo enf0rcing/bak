@@ -65,7 +65,7 @@ avltree insert(avltree t, ull x) {
         }
     } else if (x > t->data) {
         t->right = insert(t->right, x);
-        if (geth(t->right) - geth(t->left) > 2) {
+        if (geth(t->right) - geth(t->left) == 2) {
             if (x > t->right->data) {
                 t = rr(t);
             } else {
