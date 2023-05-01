@@ -10,14 +10,14 @@ typedef struct arrStack {
     int top;
 } Stack;
 
-int trans(char *str, int i, int j) {
+int myatoi(char *str, int i, int j) {
     char tmp[10];
     strncpy(tmp, &str[i], j - i);
     tmp[j - i] = '\0';
     return atoi(tmp);
 }
 
-int calc(char o, int a, int b) {
+int basiccalc(char o, int a, int b) {
     switch (o) {
         case '+' :
             return a + b;
@@ -66,20 +66,20 @@ int main() {
         if (isdigit(str[i]) || str[i] == '-' && (i == 0 || str[i - 1] == '(') && isdigit(str[i + 1])) {
             int j;
             for (j = i + 1; isdigit(str[j]); j++);
-            push(&ns, trans(str, i, j), '\0');
+            push(&ns, myatoi(str, i, j), '\0');
             i = j - 1;
         } else if (str[i] == '+' || str[i] == '-') {
             while (os.top != -1 && os.op[os.top] != '(') {
                 int b = popn(&ns);
                 int a = popn(&ns);
-                push(&ns, calc(popo(&os), a, b), '\0');
+                push(&ns, basiccalc(popo(&os), a, b), '\0');
             }
             push(&os, INT_MIN, str[i]);
         } else if (str[i] == '*' || str[i] == '/') {
             while (os.top != -1 && os.op[os.top] != '(' && os.op[os.top] != '+' && os.op[os.top] != '-') {
                 int b = popn(&ns);
                 int a = popn(&ns);
-                push(&ns, calc(popo(&os), a, b), '\0');
+                push(&ns, basiccalc(popo(&os), a, b), '\0');
             }
             push(&os, INT_MIN, str[i]);
         } else if (str[i] == '(') {
@@ -88,7 +88,7 @@ int main() {
             while (os.top != -1 && os.op[os.top] != '(') {
                 int b = popn(&ns);
                 int a = popn(&ns);
-                push(&ns, calc(popo(&os), a, b), '\0');
+                push(&ns, basiccalc(popo(&os), a, b), '\0');
             }
             popo(&os);
         }
@@ -96,7 +96,7 @@ int main() {
     while (os.top != -1) {
         int b = popn(&ns);
         int a = popn(&ns);
-        push(&ns, calc(popo(&os), a, b), '\0');
+        push(&ns, basiccalc(popo(&os), a, b), '\0');
     }
     printf("%d", ns.num[0]);
     return 0;

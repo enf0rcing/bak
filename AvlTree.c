@@ -97,11 +97,10 @@ int find(avltree t, ull x) {
 
 int main() {
     avltree mytree = NULL;
-    mytree = insert(mytree, 1);
-    mytree = insert(mytree, 2);
-    mytree = insert(mytree, 3);
-    mytree = insert(mytree, 4);
-    printf("%d", find(mytree, 5));
+    for (int i = 0; i < 5; i++) {
+        mytree = insert(mytree, i + 1);
+    }
+    printf("%d", find(mytree, 6));
 
     return 0;
 }
