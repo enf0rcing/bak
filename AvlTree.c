@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX(x, y) x > y ? x : y
+#define MAX(x, y) (x > y ? x : y)
 #define ull unsigned long long
 
 typedef struct avlnode {
