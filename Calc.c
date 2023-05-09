@@ -1,103 +1,88 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <ctype.h>
-#include <limits.h>
 
 typedef struct arrStack {
-    int num[100];
-    char op[100];
+    int data[100];
     int top;
 } Stack;
 
-int myatoi(char *str, int i, int j) {
-    char tmp[10];
-    strncpy(tmp, &str[i], j - i);
-    tmp[j - i] = '\0';
-    return atoi(tmp);
-}
-
-int basiccalc(char o, int a, int b) {
-    switch (o) {
+int basic_calc(int operator, int x, int y) {
+    switch (operator) {
         case '+' :
-            return a + b;
+            return x + y;
         case '-' :
-            return a - b;
+            return x - y;
         case '*' :
-            return a * b;
+            return x * y;
         case '/' :
-            return a / b;
+            return x / y;
         default:
-            return INT_MIN;
+            return 0;
     }
 }
 
-void push(Stack *s, int n, char o) {
-    if (n != INT_MIN) {
-        s->num[++s->top] = n;
-    }
-    if (o != '\0') {
-        s->op[++s->top] = o;
-    }
+void push(Stack *s, int x) {
+    s->data[++s->top] = x;
 }
 
-int popn(Stack *s) {
-    return s->num[s->top--];
-}
-
-char popo(Stack *s) {
-    return s->op[s->top--];
+int pop(Stack *s) {
+    return s->data[s->top--];
 }
 
 int main() {
     char str[1000];
     scanf("%s", str);
-    Stack ns, os;
-    ns.top = -1;
-    os.top = -1;
-    for (int i = 0; str[i] != '\0'; i++) {
+    Stack nS, oS;
+    nS.top = -1;
+    oS.top = -1;
+    for (int i = 0; str[i] != '\0'; i += 1) {
         if (str[i] == '[' || str[i] == '{') {
             str[i] = '(';
         } else if (str[i] == ']' || str[i] == '}') {
             str[i] = ')';
         }
     }
-    for (int i = 0; str[i] != '\0'; i++) {
+    for (int i = 0; str[i] != '\0'; i += 1) {
         if (isdigit(str[i]) || str[i] == '-' && (i == 0 || str[i - 1] == '(') && isdigit(str[i + 1])) {
-            int j;
-            for (j = i + 1; isdigit(str[j]); j++);
-            push(&ns, myatoi(str, i, j), '\0');
-            i = j - 1;
-        } else if (str[i] == '+' || str[i] == '-') {
-            while (os.top != -1 && os.op[os.top] != '(') {
-                int b = popn(&ns);
-                int a = popn(&ns);
-                push(&ns, basiccalc(popo(&os), a, b), '\0');
-            }
-            push(&os, INT_MIN, str[i]);
-        } else if (str[i] == '*' || str[i] == '/') {
-            while (os.top != -1 && os.op[os.top] != '(' && os.op[os.top] != '+' && os.op[os.top] != '-') {
-                int b = popn(&ns);
-                int a = popn(&ns);
-                push(&ns, basiccalc(popo(&os), a, b), '\0');
-            }
-            push(&os, INT_MIN, str[i]);
+            char *p;
+            push(&nS, strtol(&str[i], &p, 10));
+            do {
+                i += 1;
+            } while (isdigit(str[i]));
+            i -= 1;
         } else if (str[i] == '(') {
-            push(&os, INT_MIN, str[i]);
-        } else {
-            while (os.top != -1 && os.op[os.top] != '(') {
-                int b = popn(&ns);
-                int a = popn(&ns);
-                push(&ns, basiccalc(popo(&os), a, b), '\0');
+            push(&oS, str[i]);
+        } else if (str[i] == ')') {
+            while (oS.top != -1 && oS.data[oS.top] != '(') {
+                int b = pop(&nS);
+                int a = pop(&nS);
+                push(&nS, basic_calc(pop(&oS), a, b));
             }
-            popo(&os);
+            pop(&oS);
+        } else if (str[i] == '+' || str[i] == '-') {
+            while (oS.top != -1 && oS.data[oS.top] != '(') {
+                int b = pop(&nS);
+                int a = pop(&nS);
+                push(&nS, basic_calc(pop(&oS), a, b));
+            }
+            push(&oS, str[i]);
+        } else if (str[i] == '*' || str[i] == '/') {
+            while (oS.top != -1 && oS.data[oS.top] != '(' && oS.data[oS.top] != '+' && oS.data[oS.top] != '-') {
+                int b = pop(&nS);
+                int a = pop(&nS);
+                push(&nS, basic_calc(pop(&oS), a, b));
+            }
+            push(&oS, str[i]);
+        } else {
+            return -1;
         }
     }
-    while (os.top != -1) {
-        int b = popn(&ns);
-        int a = popn(&ns);
-        push(&ns, basiccalc(popo(&os), a, b), '\0');
+    while (oS.top != -1) {
+        int b = pop(&nS);
+        int a = pop(&nS);
+        push(&nS, basic_calc(pop(&oS), a, b));
     }
-    printf("%d", ns.num[0]);
+    printf("%d", nS.data[0]);
     return 0;
 }

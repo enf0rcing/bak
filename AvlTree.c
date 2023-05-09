@@ -1,62 +1,67 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX(x, y) (x > y ? x : y)
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
 #define ull unsigned long long
 
-typedef struct avlnode {
+typedef struct avlNode {
     ull data;
     int height;
-    struct avlnode *left, *right;
-} *avltree;
+    struct avlNode *left, *right;
+} *AvlTree;
 
-int geth(avltree t) {
+AvlTree new_node(ull x) {
+    AvlTree ret = malloc(sizeof(struct avlNode));
+    ret->data = x;
+    ret->height = 0;
+    ret->left = NULL;
+    ret->right = NULL;
+    return ret;
+}
+
+int get_height(AvlTree t) {
     if (t == NULL) {
         return -1;
     }
     return t->height;
 }
 
-avltree ll(avltree t) {
-    avltree ret;
+AvlTree ll(AvlTree t) {
+    AvlTree ret;
     ret = t->left;
     t->left = ret->right;
     ret->right = t;
-    t->height = MAX(geth(t->left), geth(t->right)) + 1;
-    ret->height = MAX(geth(ret->left), t->height) + 1;
+    t->height = MAX(get_height(t->left), get_height(t->right)) + 1;
+    ret->height = MAX(get_height(ret->left), t->height) + 1;
     return ret;
 }
 
-avltree rr(avltree t) {
-    avltree ret;
+AvlTree rr(AvlTree t) {
+    AvlTree ret;
     ret = t->right;
     t->right = ret->left;
     ret->left = t;
-    t->height = MAX(geth(t->left), geth(t->right)) + 1;
-    ret->height = MAX(geth(ret->right), t->height) + 1;
+    t->height = MAX(get_height(t->left), get_height(t->right)) + 1;
+    ret->height = MAX(get_height(ret->right), t->height) + 1;
     return ret;
 }
 
-avltree lr(avltree t) {
+AvlTree lr(AvlTree t) {
     t->left = rr(t->left);
     return ll(t);
 }
 
-avltree rl(avltree t) {
+AvlTree rl(AvlTree t) {
     t->right = ll(t->right);
     return rr(t);
 }
 
-avltree insert(avltree t, ull x) {
+AvlTree insert(AvlTree t, ull x) {
     if (t == NULL) {
-        t = malloc(sizeof(avltree));
-        t->data = x;
-        t->height = 0;
-        t->left = NULL;
-        t->right = NULL;
+        t = new_node(x);
     } else if (x < t->data) {
         t->left = insert(t->left, x);
-        if (geth(t->left) - geth(t->right) == 2) {
+        if (get_height(t->left) - get_height(t->right) == 2) {
             if (x < t->left->data) {
                 t = ll(t);
             } else {
@@ -65,7 +70,7 @@ avltree insert(avltree t, ull x) {
         }
     } else if (x > t->data) {
         t->right = insert(t->right, x);
-        if (geth(t->right) - geth(t->left) == 2) {
+        if (get_height(t->right) - get_height(t->left) == 2) {
             if (x > t->right->data) {
                 t = rr(t);
             } else {
@@ -73,11 +78,11 @@ avltree insert(avltree t, ull x) {
             }
         }
     }
-    t->height = MAX(geth(t->left), geth(t->right)) + 1;
+    t->height = MAX(get_height(t->left), get_height(t->right)) + 1;
     return t;
 }
 
-int find(avltree t, ull x) {
+int find(AvlTree t, ull x) {
     if (t == NULL) {
         return 0;
     }
@@ -86,7 +91,8 @@ int find(avltree t, ull x) {
             return 0;
         }
         return find(t->right, x);
-    } else if (t->data > x) {
+    }
+    if (t->data > x) {
         if (t->left == NULL) {
             return 0;
         }
@@ -96,11 +102,11 @@ int find(avltree t, ull x) {
 }
 
 int main() {
-    avltree mytree = NULL;
+    AvlTree myTree = NULL;
     for (int i = 0; i < 5; i++) {
-        mytree = insert(mytree, i + 1);
+        myTree = insert(myTree, i + 1);
     }
-    printf("%d", find(mytree, 6));
+    printf("%d", find(myTree, 6));
 
     return 0;
 }
