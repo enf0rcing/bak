@@ -7,6 +7,14 @@ typedef struct arrStack {
     int top;
 } Stack;
 
+void push(Stack *s, int x) {
+    s->data[++s->top] = x;
+}
+
+int pop(Stack *s) {
+    return s->data[s->top--];
+}
+
 int basic_calc(int operator, int x, int y) {
     switch (operator) {
         case '+' :
@@ -22,20 +30,13 @@ int basic_calc(int operator, int x, int y) {
     }
 }
 
-void push(Stack *s, int x) {
-    s->data[++s->top] = x;
-}
-
-int pop(Stack *s) {
-    return s->data[s->top--];
-}
-
 int main() {
     char str[1000];
-    scanf("%s", str);
     Stack nS, oS;
     nS.top = -1;
     oS.top = -1;
+    scanf("%s", str);
+
     for (int i = 0; str[i] != '\0'; i += 1) {
         if (str[i] == '[' || str[i] == '{') {
             str[i] = '(';
@@ -43,6 +44,7 @@ int main() {
             str[i] = ')';
         }
     }
+
     for (int i = 0; str[i] != '\0'; i += 1) {
         if (isdigit(str[i]) || str[i] == '-' && (i == 0 || str[i - 1] == '(') && isdigit(str[i + 1])) {
             char *p;
@@ -83,6 +85,7 @@ int main() {
         int a = pop(&nS);
         push(&nS, basic_calc(pop(&oS), a, b));
     }
+
     printf("%d", nS.data[0]);
     return 0;
 }
