@@ -1,6 +1,6 @@
 #include "MySort.h"
 
-#define CUTOFF 15
+#define CUTOFF 20
 
 int median3(int *arr, int left, int right) {
     int center = (left + right) / 2;

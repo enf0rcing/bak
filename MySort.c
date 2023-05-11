@@ -10,10 +10,15 @@ void swap(int *a, int *b) {
 
 void bubble_sort(int *arr, int n) {
     for (int i = 0; i < n; i += 1) {
+        int flag = 1;
         for (int j = n - 1; j > i; j -= 1) {
             if (arr[j - 1] > arr[j]) {
+                flag = 0;
                 swap(&arr[j - 1], &arr[j]);
             }
+        }
+        if (flag) {
+            break;
         }
     }
 }
@@ -27,10 +32,6 @@ void insert_sort(int *arr, int n) {
         }
         arr[j] = tmp;
     }
-}
-
-void reset(int *arr, int *pool, int size) {
-    memcpy(arr, pool, size * sizeof(int));
 }
 
 long long sort_test(void (*sort)(int *, int), int *arr, int n) {
@@ -64,33 +65,32 @@ int main() {
     }
     printf("\n\n");
 
-    reset(test, target, i);
+    memcpy(test, target, i * sizeof(int));
     long long time = sort_test(bubble_sort, test, i);
     printf("Bubble Sort: %lld\n", time);
     printf("\n");
 
-
-    reset(test, target, i);
+    memcpy(test, target, i * sizeof(int));
     time = sort_test(insert_sort, test, i);
     printf("Insert Sort: %lld\n", time);
     printf("\n");
 
-    reset(test, target, i);
+    memcpy(test, target, i * sizeof(int));
     time = sort_test(shell_sort, test, i);
     printf("Shell Sort: %lld\n", time);
     printf("\n");
 
-    reset(test, target, i);
+    memcpy(test, target, i * sizeof(int));
     time = sort_test(heap_sort, test, i);
     printf("Heap Sort: %lld\n", time);
     printf("\n");
 
-    reset(test, target, i);
+    memcpy(test, target, i * sizeof(int));
     time = sort_test(merge_sort, test, i);
     printf("Merge Sort: %lld\n", time);
     printf("\n");
 
-    reset(test, target, i);
+    memcpy(test, target, i * sizeof(int));
     time = sort_test(quick_sort, test, i);
     printf("Quick Sort: %lld\n", time);
     printf("\n");
