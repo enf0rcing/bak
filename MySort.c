@@ -52,10 +52,9 @@ long long sort_test(void (*sort)(int *, int), int *arr, int n) {
 }
 
 int main() {
-    FILE *fp;
     int target[1000] = {0}, test[1000] = {0};
 
-    fp = fopen(".\\data.txt", "r");
+    FILE *fp = fopen(".\\data.txt", "r");
 
     printf("Input: ");
     int i = 0;
