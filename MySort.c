@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include <windows.h>
+#include <string.h>
+#include <sys/time.h>
 #include "MySort.h"
 
 void swap(int *a, int *b) {
@@ -28,71 +29,50 @@ void insert_sort(int *arr, int n) {
         int tmp = arr[i];
         int j;
         for (j = i; j > 0 && arr[j - 1] > tmp; j -= 1) {
-            arr[j] = arr[j -  1];
+            arr[j] = arr[j - 1];
         }
         arr[j] = tmp;
     }
 }
 
-long long sort_test(void (*sort)(int *, int), int *arr, int n) {
-    LARGE_INTEGER tmp;
-    long long start, end;
+long sort_test(void (*sort)(int *, int), int *arr, int n) {
+    struct timeval tmp;
+    long start, end;
 
-    QueryPerformanceCounter(&tmp);
-    start = tmp.QuadPart;
+    gettimeofday(&tmp, 0);
+    start = tmp.tv_usec;
     sort(arr, n);
-    QueryPerformanceCounter(&tmp);
-    end = tmp.QuadPart;
+    gettimeofday(&tmp, 0);
+    end = tmp.tv_usec;
 
-    for (int i = 0; i < n; i += 1) {
-        printf("%d ", arr[i]);
-    }
-    printf("\n");
     return end - start;
 }
 
 int main() {
-    int target[1000] = {0}, test[1000] = {0};
+    int n, target[1000] = {0}, test[1000] = {0};
+    long time;
+    char sort_name_arr[6][15] = {"bubble_sort", "insert_sort", "shell_sort", "heap_sort", "merge_sort", "quick_sort"};
+    void (*sort_fun_arr[6])(int *, int) = {bubble_sort, insert_sort, shell_sort, heap_sort, merge_sort, quick_sort};
+    FILE *fp = fopen("data.txt", "r");
 
-    FILE *fp = fopen(".\\data.txt", "r");
+    if (fp) {
+        n = 0;
+        printf("Input: ");
+        while (fscanf(fp, "%d", &target[n]) != EOF) {
+            printf("%d ", target[n]);
+            n += 1;
+        }
+        fclose(fp);
+        printf("\n");
 
-    printf("Input: ");
-    int i = 0;
-    while (fscanf(fp, "%d", &target[i]) != EOF) {
-        printf("%d ", target[i]);
-        i += 1;
+        for (int i = 0; i < 6; i += 1) {
+            memcpy(test, target, n * sizeof(int));
+            time = sort_test(sort_fun_arr[i], test, n);
+            printf("\n%s: %ld (ms)", sort_name_arr[i], time);
+        }
+    } else {
+        printf("Can not open data.txt");
     }
-    printf("\n\n");
-
-    memcpy(test, target, i * sizeof(int));
-    long long time = sort_test(bubble_sort, test, i);
-    printf("Bubble Sort: %lld\n", time);
-    printf("\n");
-
-    memcpy(test, target, i * sizeof(int));
-    time = sort_test(insert_sort, test, i);
-    printf("Insert Sort: %lld\n", time);
-    printf("\n");
-
-    memcpy(test, target, i * sizeof(int));
-    time = sort_test(shell_sort, test, i);
-    printf("Shell Sort: %lld\n", time);
-    printf("\n");
-
-    memcpy(test, target, i * sizeof(int));
-    time = sort_test(heap_sort, test, i);
-    printf("Heap Sort: %lld\n", time);
-    printf("\n");
-
-    memcpy(test, target, i * sizeof(int));
-    time = sort_test(merge_sort, test, i);
-    printf("Merge Sort: %lld\n", time);
-    printf("\n");
-
-    memcpy(test, target, i * sizeof(int));
-    time = sort_test(quick_sort, test, i);
-    printf("Quick Sort: %lld\n", time);
-    printf("\n");
 
     return 0;
 }

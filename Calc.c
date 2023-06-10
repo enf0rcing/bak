@@ -72,7 +72,6 @@ int main() {
     }
     Stack nS = {.top = -1}, oS = {.top = -1};
 
-
     for (int i = 0; i < len; i += 1) {
         if (isdigit(str[i])) {
             char *p;
